@@ -164,7 +164,7 @@ static int eagle_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 
     while (next_dir) {
         const char* file_name = next_dir->d_name;
-        filler(buf, file_name, NULL, 0);
+        filler(buf, file_name, NULL, 0, 0);
 	next_dir = dirent_get(NULL, dpk);
     }
 

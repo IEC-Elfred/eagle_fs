@@ -8,10 +8,10 @@
   gcc -Wall myfs.c mydiskio.c `pkg-config fuse --cflags --libs` -o myfs
 */
 
-#define FUSE_USE_VERSION 26
+#define FUSE_USE_VERSION 31
 #define LOG_FILE ((FILE*)fuse_get_context()->private_data)
 
-#include <fuse.h>
+#include <fuse3/fuse.h>
 #include "fsconfig.h"
 
 
