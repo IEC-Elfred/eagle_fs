@@ -10,7 +10,7 @@ SRCS_MKFS = eagle_mkfs.c diskio.c spblk.c inode.c datablk.c dir.c
 all: $(PROG) $(MKFS) $(TDISK)
 
 $(PROG):	$(SRCS)
-	$(CC) $(CFLAGS) $(SRCS) `pkg-config fuse333 --cflags --libs` -o $(PROG)
+	$(CC) $(CFLAGS) $(SRCS) `pkg-config fuse3 --cflags --libs` -o $(PROG)
 
 $(MKFS):	$(SRCS_MKFS)
 	$(CC) $(CFLAGS) $(SRCS_MKFS) -o $(MKFS)
