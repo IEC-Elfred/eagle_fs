@@ -31,7 +31,7 @@ dir_ent * dirent_get(const inode_incore *i_incore, dpackage * dpk)
 			return NULL;  /* no more entry in this directory! */
 
 		int rd_num;
-		if((rd_num = eagle_sys_read((uint64_t)(dpk->incore), (char *) &ent, reclen, dpk->offset))<=0)
+		if((rd_num = my_sys_read((uint64_t)(dpk->incore), (char *) &ent, reclen, dpk->offset))<=0)
 			return NULL; // cannot read entry!
 
 		dpk->offset += reclen;
@@ -69,7 +69,7 @@ int dirent_add(inode_incore * dirp, const dir_ent * entry)
 
 	while(ent) {
 		if(ent->d_inode == 0) {
-            if((eagle_sys_write((uint64_t)dirp, (char *) &ent_d, reclen, ent->d_offset - reclen)) <= 0)
+            if((my_sys_write((uint64_t)dirp, (char *) &ent_d, reclen, ent->d_offset - reclen)) <= 0)
 				return -1;  // can not write entry!
 			return 0;
 		}
@@ -77,7 +77,7 @@ int dirent_add(inode_incore * dirp, const dir_ent * entry)
 	}
 */
 
-    if((eagle_sys_write((uint64_t)dirp, (char *) &ent_d, reclen, dirp->inode.file_sz))<=0)
+    if((my_sys_write((uint64_t)dirp, (char *) &ent_d, reclen, dirp->inode.file_sz))<=0)
 		return -1;
 
 	dirp->status |= 0x04;
@@ -98,7 +98,7 @@ int dirent_rm(inode_incore * dirp, UINT i_num)
 			dirent_d ent_d;
 			ent_d.d_inode = 0;
 			ent_d.d_name[0] = '\0';
-			eagle_sys_write((uint64_t)dirp, (char*) &ent_d, ent->d_length, ent->d_offset - ent->d_length);
+			my_sys_write((uint64_t)dirp, (char*) &ent_d, ent->d_length, ent->d_offset - ent->d_length);
 			dirp->status |= 0x04;
 			return 0;
 */
@@ -111,14 +111,14 @@ int dirent_rm(inode_incore * dirp, UINT i_num)
 
 	UINT new_size = dirp->inode.file_sz - ent->d_length;
 	char *buf = malloc(dirp->inode.file_sz);
-	eagle_sys_read((uint64_t)dirp, buf, dirp->inode.file_sz, 0);
+	my_sys_read((uint64_t)dirp, buf, dirp->inode.file_sz, 0);
 	char *buf_new = malloc(new_size);
 	memcpy(buf_new, buf, ent->d_offset - ent->d_length);
 	memcpy(buf_new + ent->d_offset - ent->d_length, buf + ent->d_offset, dirp->inode.file_sz - ent->d_offset);
 	free(buf);
 
 	file_free(dirp);
-	eagle_sys_write((uint64_t)dirp, buf_new, new_size, 0);
+	my_sys_write((uint64_t)dirp, buf_new, new_size, 0);
 	free(buf_new);
 	dirp->status |= 0x04;
 

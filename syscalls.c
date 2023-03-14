@@ -13,7 +13,7 @@
 
 
 
-int eagle_sys_mknod(const char * path, file_type itype,  mode_t mode)
+int my_sys_mknod(const char * path, file_type itype,  mode_t mode)
 {
 /*   only super user can create special files and directories 
  *   coming soon...
@@ -77,15 +77,15 @@ int eagle_sys_mknod(const char * path, file_type itype,  mode_t mode)
 }
 
 /* try to create a new directory with path */
-int eagle_sys_mkdir(const char * path, mode_t mode)
+int my_sys_mkdir(const char * path, mode_t mode)
 {
-	int result = eagle_sys_mknod(path, 2, mode);
+	int result = my_sys_mknod(path, 2, mode);
 	if(result)
 		return -1;
 	return 0;
 }
 
-int eagle_sys_unlink(const char * path)
+int my_sys_unlink(const char * path)
 {
     //fprintf(stderr, "unlink begin!\n");
 	char name[MAX_FNAME_LEN + 1];
@@ -136,7 +136,7 @@ int eagle_sys_unlink(const char * path)
 	return 0;
 }
 
-int eagle_sys_rmdir(const char * path)
+int my_sys_rmdir(const char * path)
 {
 	char name[MAX_FNAME_LEN + 1];
 	char parent[strlen(path)];
@@ -187,7 +187,7 @@ int eagle_sys_rmdir(const char * path)
 }
 
 /* only used while file system is made */
-int eagle_sys_mkroot()
+int my_sys_mkroot()
 {
 	inode_incore * incore = ialloc();
 	dir_ent ent;
@@ -212,7 +212,7 @@ int eagle_sys_mkroot()
 	return 0;
 }
 
-uint64_t eagle_sys_open(const char* path, int flags, mode_t mode)
+uint64_t my_sys_open(const char* path, int flags, mode_t mode)
 {
      inode_incore* opened_inode = namei(path);
 
@@ -312,7 +312,7 @@ uint64_t eagle_sys_open(const char* path, int flags, mode_t mode)
      return (uint64_t)opened_inode;
 }
 
-int eagle_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
+int my_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
 {
     inode_incore* pinode = (inode_incore*)fd;
 
@@ -351,7 +351,7 @@ int eagle_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
     return count;
 }
 
-int eagle_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
+int my_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
 {
     inode_incore* pinode = (inode_incore*)fd;
 
@@ -418,7 +418,7 @@ int eagle_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
 }
 
 //Assume user have root permission
-int eagle_sys_access(const char* path, int mask)
+int my_sys_access(const char* path, int mask)
 {
     inode_incore* pinode = namei(path);
     if (!pinode)

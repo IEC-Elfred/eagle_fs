@@ -1,4 +1,4 @@
-/* This program is used to test if eagle_mkfs program has processed the disk to
+/* This program is used to test if my_mkfs program has processed the disk to
  * the right format.
  **/
 
@@ -98,8 +98,8 @@ int main(int argc, char** argv)
 
     printf("Testing mkfs flag string in block 1: %s\n", flag_string);
 
-    if (strncmp(flag_string, "Eagle", strlen("Eagle"))) {
-        fprintf(stderr, "mkfs flag string not right!It should be 'Eagle'!\n");
+    if (strncmp(flag_string, "my", strlen("my"))) {
+        fprintf(stderr, "mkfs flag string not right!It should be 'my'!\n");
         close(disk_fd);
         return -1;
     } else

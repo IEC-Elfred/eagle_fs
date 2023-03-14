@@ -23,7 +23,7 @@ void mkfs_flag_init()
 {
     char flag_string[20];
    // memset(flag_string, '0', 20);
-    strcpy(flag_string, "Eagle\0");
+    strcpy(flag_string, "my\0");
 
 
     disk_write(flag_string, 0, 1);
@@ -31,7 +31,7 @@ void mkfs_flag_init()
 
 
 
-int eagle_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
+int my_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
 {
     inode_incore* pinode = (inode_incore*)fd;
 
@@ -70,7 +70,7 @@ int eagle_sys_read(uint64_t fd, char *buf, size_t size, off_t offset)
     return count;
 }
 
-int eagle_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
+int my_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
 {
     inode_incore* pinode = (inode_incore*)fd;
 
@@ -121,7 +121,7 @@ int eagle_sys_write(uint64_t fd, const char *buf, size_t size, off_t offset)
 }
 
 /* only used while file system is made */
-int eagle_sys_mkroot()
+int my_sys_mkroot()
 {
     inode_incore * incore = ialloc();
     dir_ent ent;
@@ -176,13 +176,13 @@ void mkfs()
     inode_incore_init();
 
     data_blk_init();
-    eagle_sys_mkroot();
+    my_sys_mkroot();
 
 
     fprintf(stderr, "mkfs ok!\n");
 }
 
-int eagle_sync()
+int my_sync()
 {
     int ret1 = super_write();
     int ret2 = disk_write(free_db_hd_lst, sp_blk.free_blks_hd, 1);
@@ -215,7 +215,7 @@ int main(int argc, char** argv)
 
     fprintf(stderr, "BLOCK_SIZE = %ld\n", BLOCK_SIZE);
 
-    eagle_sync();
+    my_sync();
     close(disk_fd);
 
     return 0;

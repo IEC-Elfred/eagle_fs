@@ -1,6 +1,6 @@
 #include "fs.h"
 #include "syscalls.h"
-
+#include <sys/stat.h>
 #include "diskio.h"
 #include "spblk.h"
 #include "inode.h"
@@ -70,7 +70,7 @@ void fs_init()
    // data_blk_init();
      disk_read(free_db_hd_lst, sp_blk.free_blks_hd, 1);
 
-  //  eagle_sys_mkroot();
+  //  my_sys_mkroot();
 
 
     fprintf(stderr, "fs_init ok!\n");
@@ -85,14 +85,14 @@ int sync()
     return ret1&&ret2;
 }
 
-static void* eagle_init(struct fuse_conn_info *conn)
+static void* my_init(struct fuse_conn_info *conn)
 {
-    log_print("eagle Inited!\n");
+    log_print("my Inited!\n");
 
     return (FILE*)fuse_get_context()->private_data;
 }
 
-static int myfs_statfs(const char *path, struct statvfs *statvfs_buf) {
+static int my_statfs(const char *path, struct statvfs *statvfs_buf) {
     statvfs_buf->f_bsize = BLOCK_SIZE;         // 文件系统块大小
     statvfs_buf->f_frsize = BLOCK_SIZE;        // 分片大小
     statvfs_buf->f_blocks = BLK_NUM;      // 文件系统中的总块数
@@ -108,7 +108,7 @@ static int myfs_statfs(const char *path, struct statvfs *statvfs_buf) {
     return 0;
 }
 
-static int eagle_getattr(const char *path, struct stat *stbuf)
+static int my_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
     log_print("Getattr!\n");
@@ -119,10 +119,10 @@ static int eagle_getattr(const char *path, struct stat *stbuf)
     /*if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
-    } else if (strcmp(path, eagle_path) == 0) {
+    } else if (strcmp(path, my_path) == 0) {
 		stbuf->st_mode = S_IFREG | 0444;
 		stbuf->st_nlink = 1;
-        stbuf->st_size = strlen(eagle_str);
+        stbuf->st_size = strlen(my_str);
 	} else
         res = -ENOENT;*/
 
@@ -154,7 +154,7 @@ static int eagle_getattr(const char *path, struct stat *stbuf)
 	return res;
 }
 
-static int eagle_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+static int my_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 			 off_t offset, struct fuse_file_info *fi)
 {
     log_print("Readdir!\n");
@@ -187,7 +187,7 @@ static int eagle_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     free(dpk);
 /*    filler(buf, ".", NULL, 0);
     filler(buf, "..", NULL, 0);
-    filler(buf, eagle_path + 1, NULL, 0);
+    filler(buf, my_path + 1, NULL, 0);
  */
 	pinode->inode.i_tv[0].tv_sec = time(NULL);
 	pinode->status |= 0x04;
@@ -195,7 +195,7 @@ static int eagle_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 	return 0;
 }
 
-static int eagle_create(const char *path, mode_t mode, struct fuse_file_info *fi)
+static int my_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
    /* inode_incore* opened_inode = namei(path);
 
@@ -205,30 +205,30 @@ static int eagle_create(const char *path, mode_t mode, struct fuse_file_info *fi
 
     log_print("Create!\n");
 
-    fi->fh = eagle_sys_open(path, fi->flags, mode);
+    fi->fh = my_sys_open(path, fi->flags, mode);
 
     return 0;
 }
 
-static int eagle_open(const char *path, struct fuse_file_info *fi)
+static int my_open(const char *path, struct fuse_file_info *fi)
 {
     log_print("Open!\n");
 
 
 
-  //  if (strcmp(path, eagle_path) != 0)
+  //  if (strcmp(path, my_path) != 0)
 //		return -ENOENT;
 
     //if ((fi->flags & 3) != O_RDONLY)
      //   return -EACCES;
 
 
-    fi->fh = eagle_sys_open(path, fi->flags, 0);
+    fi->fh = my_sys_open(path, fi->flags, 0);
 
     return 0;
 }
 
-static int eagle_release(const char *path, struct fuse_file_info *fi)
+static int my_release(const char *path, struct fuse_file_info *fi)
 {
     inode_incore* pinode = (inode_incore*)(fi->fh);
 
@@ -244,21 +244,21 @@ static int eagle_release(const char *path, struct fuse_file_info *fi)
 }
 
 
-static int eagle_read(const char *path, char *buf, size_t size, off_t offset,
+static int my_read(const char *path, char *buf, size_t size, off_t offset,
 		      struct fuse_file_info *fi)
 {
     log_print("Read!\n");
 
 /*	size_t len;
 	(void) fi;
-    if(strcmp(path, eagle_path) != 0)
+    if(strcmp(path, my_path) != 0)
 		return -ENOENT;
 
-    len = strlen(eagle_str);
+    len = strlen(my_str);
 	if (offset < len) {
 		if (offset + size > len)
 			size = len - offset;
-        memcpy(buf, eagle_str + offset, size);
+        memcpy(buf, my_str + offset, size);
 	} else
         size = 0;*/
 
@@ -270,14 +270,14 @@ static int eagle_read(const char *path, char *buf, size_t size, off_t offset,
 
     pthread_mutex_lock(&(pinode->lock));
 
-    int res =  eagle_sys_read(fi->fh, buf, size, offset);
+    int res =  my_sys_read(fi->fh, buf, size, offset);
 
     pthread_mutex_unlock(&(pinode->lock));
 
     return res;
 }
 
-static int eagle_write(const char *path, const char *buf, size_t size,
+static int my_write(const char *path, const char *buf, size_t size,
                        off_t offset, struct fuse_file_info *fi)
 {
     log_print("write!\n");
@@ -289,14 +289,14 @@ static int eagle_write(const char *path, const char *buf, size_t size,
 
     pthread_mutex_lock(&(pinode->lock));
 
-    int res =  eagle_sys_write(fi->fh, buf, size, offset);
+    int res =  my_sys_write(fi->fh, buf, size, offset);
 
     pthread_mutex_unlock(&(pinode->lock));
 
     return res;
 }
 
-static int eagle_truncate(const char *path, off_t size)
+static int my_truncate(const char *path, off_t size)
 {
     inode_incore* pinode = namei(path);
     file_free(pinode);
@@ -306,7 +306,7 @@ static int eagle_truncate(const char *path, off_t size)
     return 0;
 }
 
-static void eagle_destroy(void *userdata)
+static void my_destroy(void *userdata)
 {
 
     sync();
@@ -319,12 +319,12 @@ static void eagle_destroy(void *userdata)
     fclose(LOG_FILE);
 }
 
-static int eagle_access(const char * path, int mask)
+static int my_access(const char * path, int mask)
 {
 	int res;
     log_print("access!\n");
 
-    res = eagle_sys_access(path, mask);
+    res = my_sys_access(path, mask);
 
 	if (res == -1)
 		return -errno;
@@ -332,24 +332,24 @@ static int eagle_access(const char * path, int mask)
 	return 0;
 }
 
-static int eagle_mkdir(const char * path, mode_t mode)
+static int my_mkdir(const char * path, mode_t mode)
 {
     log_print("mkdir!\n");
 
-	if(eagle_sys_mkdir(path, mode))
+	if(my_sys_mkdir(path, mode))
 		return -1;
 	return 0;
 }
 
-static int eagle_unlink(const char * path)
+static int my_unlink(const char * path)
 {
     log_print("unlink!\n");
-	if(eagle_sys_unlink(path))
+	if(my_sys_unlink(path))
 		return -EISDIR;
 	return 0;
 }
 
-static int eagle_utimens(const char *path, const struct timespec tv[2])
+static int my_utimens(const char *path, const struct timespec tv[2])
 {
     log_print("utimes!\n");
 
@@ -362,15 +362,15 @@ static int eagle_utimens(const char *path, const struct timespec tv[2])
     return 0;
 }
 
-static int eagle_rmdir(const char * path)
+static int my_rmdir(const char * path)
 {
 	int res;
-	res = eagle_sys_rmdir(path);
+	res = my_sys_rmdir(path);
 	return res;
 
 }
 
-static int eagle_chown(const char * path, uid_t user_id, gid_t group_id)
+static int my_chown(const char * path, uid_t user_id, gid_t group_id)
 {
 	inode_incore * incore = namei(path);
 	if(! incore)
@@ -385,7 +385,7 @@ static int eagle_chown(const char * path, uid_t user_id, gid_t group_id)
 	return 0;
 }
 
-static int eagle_chmod(const char * path, mode_t mode)
+static int my_chmod(const char * path, mode_t mode)
 {
 	inode_incore * incore = namei(path);
 
@@ -400,7 +400,7 @@ static int eagle_chmod(const char * path, mode_t mode)
 	return 0;
 }
 
-static int eagle_fsync(const char *path, int datasync, struct fuse_file_info *fi)
+static int my_fsync(const char *path, int datasync, struct fuse_file_info *fi)
 {
    // inode_incore* pinode = (inode_incore*)(fi->fh);
 
@@ -408,26 +408,26 @@ static int eagle_fsync(const char *path, int datasync, struct fuse_file_info *fi
     return 0;
 }
 
-static struct fuse_operations eagle_oper = {
-    .init       = eagle_init,
-    .getattr	= eagle_getattr,
-    .readdir	= eagle_readdir,
-    .open       = eagle_open,
-    .release    = eagle_release,
-    .create     = eagle_create,
-    .read       = eagle_read,
-    .write      = eagle_write,
-    .truncate   = eagle_truncate,
-    .destroy    = eagle_destroy,
-    .mkdir      = eagle_mkdir,
-    .unlink     = eagle_unlink,
-    .access     = eagle_access,
-    .chmod	= eagle_chmod,
-    .chown	= eagle_chown,
+static struct fuse_operations my_oper = {
+    .init       = my_init,
+    .getattr	= my_getattr,
+    .readdir	= my_readdir,
+    .open       = my_open,
+    .release    = my_release,
+    .create     = my_create,
+    .read       = my_read,
+    .write      = my_write,
+    .truncate   = my_truncate,
+    .destroy    = my_destroy,
+    .mkdir      = my_mkdir,
+    .unlink     = my_unlink,
+    .access     = my_access,
+    .chmod	= my_chmod,
+    .chown	= my_chown,
     .statfs     = my_statfs,
-    .utimens    = eagle_utimens,
-    .rmdir      = eagle_rmdir,
-    .fsync      = eagle_fsync,
+    .utimens    = my_utimens,
+    .rmdir      = my_rmdir,
+    .fsync      = my_fsync,
 };
 
 int main(int argc, char *argv[])
@@ -457,8 +457,8 @@ int main(int argc, char *argv[])
     char flag_string[BLOCK_SIZE];
     disk_read(flag_string, 0, 1);
 
-    if (strncmp(flag_string, "Eagle", strlen("Eagle"))) {
-        fprintf(stderr, "Call eagle_mkfs first!\n");
+    if (strncmp(flag_string, "my", strlen("my"))) {
+        fprintf(stderr, "Call my_mkfs first!\n");
         close(disk_fd);
         return -1;
     }
@@ -480,7 +480,7 @@ int main(int argc, char *argv[])
   //  test_data_blk();
   //  test_bmap();
 
-    int ret = fuse_main(argc, argv, &eagle_oper, log);
+    int ret = fuse_main(argc, argv, &my_oper, log);
 
 
     return ret;

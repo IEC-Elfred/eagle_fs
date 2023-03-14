@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
 	char flag_string[BLOCK_SIZE];
 	disk_read(flag_string, 0, 1);
 
-	if (strncmp(flag_string, "Eagle", strlen("Eagle"))) {
-	        fprintf(stderr, "Call eagle_mkfs first!\n");
+	if (strncmp(flag_string, "my", strlen("my"))) {
+	        fprintf(stderr, "Call my_mkfs first!\n");
 	        close(disk_fd);
 	        return -1;
 	}
