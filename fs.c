@@ -92,6 +92,22 @@ static void* eagle_init(struct fuse_conn_info *conn)
     return (FILE*)fuse_get_context()->private_data;
 }
 
+static int myfs_statfs(const char *path, struct statvfs *statvfs_buf) {
+    statvfs_buf->f_bsize = BLOCK_SIZE;         // 文件系统块大小
+    statvfs_buf->f_frsize = BLOCK_SIZE;        // 分片大小
+    statvfs_buf->f_blocks = BLK_NUM;      // 文件系统中的总块数
+    statvfs_buf->f_bfree = BLK_NUM;        // 可用块数
+    statvfs_buf->f_bavail = BLK_NUM;       // 非超级用户可获取的块数
+    statvfs_buf->f_files = MAX_OPEN_FILES;       // 文件系统中的总文件数
+    statvfs_buf->f_ffree = MAX_OPEN_FILES;        // 可用的文件数
+    statvfs_buf->f_favail = MAX_OPEN_FILES;       // 非超级用户可获取的文件数
+    statvfs_buf->f_fsid = "mrlonely";               // 文件系统标识
+    statvfs_buf->f_flag = 0;                        // 挂载标志
+    statvfs_buf->f_namemax = MAX_FNAME_LEN; // 最大文件名长度
+
+    return 0;
+}
+
 static int eagle_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
@@ -408,10 +424,9 @@ static struct fuse_operations eagle_oper = {
     .access     = eagle_access,
     .chmod	= eagle_chmod,
     .chown	= eagle_chown,
-
+    .statfs     = my_statfs,
     .utimens    = eagle_utimens,
     .rmdir      = eagle_rmdir,
-
     .fsync      = eagle_fsync,
 };
 
