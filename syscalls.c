@@ -261,7 +261,7 @@ uint64_t eagle_sys_open(const char* path, int flags, mode_t mode)
              int ret = get_parent(path, paren_name, file_name);
              if (ret!=0) {
 		 free(p_new_entry);
-                 return (uint64_t)NULL;
+                 return -1;
 	     }
 
              strcpy(p_new_entry->d_name, file_name);
@@ -275,14 +275,14 @@ uint64_t eagle_sys_open(const char* path, int flags, mode_t mode)
 
              if(ret!=0) {
 		 free(p_new_entry);
-                 return (uint64_t)NULL;
+                 return -1;
 	     }
 	     free(p_new_entry);
             }
 
      } else { //File Open!
          if (!opened_inode)
-             return (uint64_t)NULL;
+             return -1;
 
         //if (flags & O_TRUNC) {
             /* int i;
