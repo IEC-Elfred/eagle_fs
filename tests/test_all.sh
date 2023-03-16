@@ -22,7 +22,7 @@ dd if=/dev/zero of=$2/file_double_indirect bs=$((${args[0]}+${args[1]}+10)) coun
 echo
 
 echo Try to create a file with maximum size supported by my file system:
-dd if=/dev/zero of=$2/file_max bs=2G count=1
+#dd if=/dev/zero of=$2/file_max bs=2G count=1
 echo
 
 echo result:
