@@ -17,7 +17,7 @@ int main(int argc, char** argv)
     char *buf4 = (char*)malloc(5*sizeof(char));
     char *buf5 = (char*)malloc(5*sizeof(char));
 
-    char *buf = "Hello World!\nWe are heros!\nHaha, I am so happy!\n";
+    char *buf = "Hello World!\nI did it!\nHaha, I am so happy!\n";
 
     if (argc < 2) {
         printf("Please specify path of mount point:\n");
