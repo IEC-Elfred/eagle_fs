@@ -16,7 +16,7 @@
 
 #define DISK_SIZE       (sp_blk.fs_size)
 
-#define BLOCK_SIZE      4048
+#define BLOCK_SIZE      4096
 #define INODE_LST_SZ 20
 
 #define DIRECT_NUM 2
