@@ -424,7 +424,6 @@ static struct fuse_operations my_oper = {
     .access     = my_access,
     .chmod	= my_chmod,
     .chown	= my_chown,
-    .statfs     = my_statfs,
     .utimens    = my_utimens,
     .rmdir      = my_rmdir,
     .fsync      = my_fsync,
