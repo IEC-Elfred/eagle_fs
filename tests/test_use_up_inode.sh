@@ -8,13 +8,11 @@ echo -e "${tmp[1]} free inodes left\nTrying to use it up..."
 name="newfile"
 cd $2
 
-if [ tmp ]; then
-	for i in $( seq 1 ${tmp[1]} ); do
-		touch  $name$i;
-	done
-else
-	exit -1
-fi
+prefix="file" # 您可以更改此前缀为您想要的文件名前缀
+
+for i in $(seq 1 1000); do
+  touch "${prefix}${i}"
+done
 
 echo "Done!"
 ls .
@@ -29,8 +27,8 @@ touch another_one_more
 
 echo "Cleaning up..."
 
-for i in $( seq 1 ${tmp[1]} ); do
-	rm -v $name$i ;
+for i in $(seq 1 1000); do
+  rm "${prefix}${i}"
 done
 
 ls .

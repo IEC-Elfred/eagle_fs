@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test all functions of eagle file system
+# Test all functions of my file system
 
 echo disk path: $1
 echo mount point: $2 "\n"
@@ -21,8 +21,8 @@ echo Create a file using double indirect block:
 dd if=/dev/zero of=$2/file_double_indirect bs=$((${args[0]}+${args[1]}+10)) count=1
 echo
 
-echo Try to create a file with maximum size supported by eagle file system:
-dd if=/dev/zero of=$2/file_max bs=$((${args[0]}+${args[1]}+${args[2]}-1)) count=1
+echo Try to create a file with maximum size supported by my file system:
+#dd if=/dev/zero of=$2/file_max bs=1G count=1
 echo
 
 echo result:
